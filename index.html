@@ -716,7 +716,7 @@ contenedor.innerHTML += `
 <div class="product-info">
 <h3>${producto.nombre}</h3>
 <div class="price">$${producto.precio} MXN</div>
-<button type="button" class="btn btn-primary" onclick="event.preventDefault(); agregarCarrito(${index}); toggleCarrito(); return false;">
+<button type="button" class="btn btn-primary" onclick="event.preventDefault(); event.stopPropagation(); agregarCarrito(${index}); return false;">
 Agregar al carrito
 </button>
 </div>
@@ -756,11 +756,25 @@ Eliminar
 
 function agregarCarrito(index){
 
-console.log('Agregando producto:', index);
+console.log('Producto agregado:', index);
 
-if(!productos[index]){
-alert('Producto no encontrado');
+if(!productos || !productos[index]){
+alert('Error al agregar producto');
 return;
+}
+
+carrito.push(productos[index]);
+
+actualizarCarrito();
+
+const carritoPanel = document.getElementById('carrito');
+
+if(carritoPanel){
+carritoPanel.style.right = '0px';
+}
+
+alert('Producto agregado al carrito');
+
 }
 
 
@@ -811,9 +825,18 @@ function toggleCarrito(){
 
 const carrito = document.getElementById('carrito');
 
-if(carrito.style.right === '0px'){
+if(!carrito){
+console.log('No existe carrito');
+return;
+}
 
+const estadoActual = window.getComputedStyle(carrito).right;
+
+if(estadoActual === '0px'){
 carrito.style.right = '-450px';
+}else{
+carrito.style.right = '0px';
+}
 
 }else{
 
@@ -990,7 +1013,7 @@ renderProductos();
 🛒 Carrito
 </div>
 
-<div id="carrito" style="position:fixed;top:0;right:-450px;width:400px;height:100vh;background:white;z-index:99999;padding:30px;transition:0.4s;overflow-y:auto;box-shadow:-10px 0 30px rgba(0,0,0,.15);">
+<div id="carrito" style="position:fixed;top:0;right:-450px;width:400px;height:100vh;background:white;z-index:999999999;padding:30px;transition:0.4s;overflow-y:auto;box-shadow:-10px 0 30px rgba(0,0,0,.15);border-left:1px solid #eee;">
 
 <button onclick="toggleCarrito()" style="position:absolute;top:20px;right:20px;background:#ff4d6d;color:white;border:none;padding:10px 14px;border-radius:12px;cursor:pointer;">
 ✕
